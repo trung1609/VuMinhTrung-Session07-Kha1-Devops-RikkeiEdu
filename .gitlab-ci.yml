@@ -1,0 +1,35 @@
+stages:
+  - build
+
+build_all_services:
+  stage: build
+  image: eclipse-temurin:17-jdk-alpine
+
+  script:
+    # 1. Build Account Service
+    - echo "Building account-service..."
+    - cd account-service
+    - chmod +x ./gradlew
+    - ./gradlew assemble
+    - cd ..
+
+    # 2. Build API Gateway
+    - echo "Building api-gateway..."
+    - cd api-gateway
+    - chmod +x ./gradlew
+    - ./gradlew assemble
+    - cd ..
+
+    # 3. Build Transaction Service
+    - echo "Building transaction-service..."
+    - cd transaction-service
+    - chmod +x ./gradlew
+    - ./gradlew assemble
+    - cd ..
+
+  artifacts:
+    paths:
+      - account-service/build/libs/*.jar
+      - api-gateway/build/libs/*.jar
+      - transaction-service/build/libs/*.jar
+    expire_in: 3 days
