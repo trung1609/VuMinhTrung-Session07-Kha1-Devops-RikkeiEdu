@@ -1,0 +1,47 @@
+name: Build Spring Boot Microservices
+
+on:
+  push:
+    branches: [ "main"]
+
+jobs:
+  build_all_services:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Thiết lập Java 17 (Eclipse Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build Account Service
+        working-directory: ./account-service
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assemble
+
+      - name: Build API Gateway
+        working-directory: ./api-gateway
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assemble
+
+      - name: Build Transaction Service
+        working-directory: ./transaction-service
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assemble
+
+      - name: Lưu trữ Artifacts (File .jar)
+        uses: actions/upload-artifact@v4
+        with:
+          name: microservices-jars
+          path: |
+            account-service/build/libs/*.jar
+            api-gateway/build/libs/*.jar
+            transaction-service/build/libs/*.jar
+          retention-days: 3
